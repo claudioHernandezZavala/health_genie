@@ -1,22 +1,29 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
-
+# Load the dataset
 df = pd.read_csv('diabete_prediction_dataset.csv')
 
+# Drop rows with missing values or impute missing values
+df.dropna(inplace=True)
 
-# Encode smoking_history feature
-df['smoking_history'] = df['smoking_history'].map({'never': 0, 'current': 1, 'former': 2, 'ever': 3, 'not current': 4, 'No Info': 5})
+# Keep only glucose level and hypertension as predictors
+df = df[['blood_glucose_level', 'hypertension', 'diabetes']]
 
-# Convert gender feature to numerical values (assuming binary encoding)
-df['gender'] = df['gender'].map({'Female': 0, 'Male': 1})
+# Split the dataset into features (X) and the target variable (y)
+X = df.drop(columns=['diabetes'])
+y = df['diabetes']
 
-# Create age groups based on age ranges
-age_bins = [0, 18, 35, 50, 65, 100]
-age_labels = ['0-18', '19-35', '36-50', '51-65', '65+']
-df['age_group'] = pd.cut(df['age'], bins=age_bins, labels=age_labels)
+# Feature scaling
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
 
-# Display the updated DataFrame with new features
-print("lala")
-print(df.head())
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
-
+# Display the first few rows of the preprocessed features (X) and the target variable (y)
+print("Preprocessed features (X):")
+print(X.head())
+print("\nTarget variable (y):")
+print(y.head())
